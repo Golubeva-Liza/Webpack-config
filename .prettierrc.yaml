@@ -1,0 +1,19 @@
+# trailingComma: "none"
+
+printWidth: 80
+
+tabWidth: 4
+
+semi: false
+
+singleQuote: true
+
+# jsxSingleQuote: false
+
+# bracketSpacing: true
+
+# bracketSameLine: true
+
+# embeddedLanguageFormatting: "off"
+
+# singleAttributePerLine: true
