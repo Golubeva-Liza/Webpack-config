@@ -1,57 +1,39 @@
 import path from 'path'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
 import webpack from 'webpack'
 import type { Configuration as DevServerConfiguration } from 'webpack-dev-server'
-import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import {
+    BuildOptions,
+    BuildPaths,
+    EnvVars,
+    webpackLoaders,
+    webpackPlugins,
+} from './config/build'
 
-type Mode = 'production' | 'development'
-
-interface EnvVars {
-    mode: Mode
-    port?: number
-}
-
-export default (env: EnvVars) => {
+export default (env: EnvVars): webpack.Configuration => {
     const isDev = env.mode === 'development'
-    const isProd = !isDev
 
-    const config: webpack.Configuration = {
-        mode: env.mode ?? 'development',
+    const paths: BuildPaths = {
         entry: path.resolve(__dirname, 'src', 'index.tsx'),
+        output: path.resolve(__dirname, 'build'),
+        html: path.resolve(__dirname, 'public', 'index.html'),
+    }
+
+    const options: BuildOptions = {
+        isDev,
+        paths,
+    }
+
+    return {
+        mode: env.mode ?? 'development',
+        entry: paths.entry,
         output: {
-            path: path.resolve(__dirname, 'build'),
+            path: paths.output,
             filename: '[name].[contenthash].js',
             clean: true,
         },
-        plugins: [
-            new HtmlWebpackPlugin({
-                template: path.resolve(__dirname, 'public', 'index.html'),
-            }),
-            isProd &&
-                new MiniCssExtractPlugin({
-                    filename: 'css/[name].[contenthash:8].css',
-                    chunkFilename: 'css/[name].[contenthash:8].css',
-                }),
-        ].filter(Boolean),
+        plugins: webpackPlugins(options),
         module: {
-            rules: [
-                {
-                    test: /\.s[ac]ss$/i,
-                    use: [
-                        // Creates `style` nodes from JS strings
-                        isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-                        // Translates CSS into CommonJS
-                        'css-loader',
-                        // Compiles Sass to CSS
-                        'sass-loader',
-                    ],
-                },
-                {
-                    test: /\.tsx?$/,
-                    use: 'ts-loader',
-                    exclude: /node_modules/,
-                },
-            ],
+            rules: webpackLoaders(options),
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
@@ -62,5 +44,4 @@ export default (env: EnvVars) => {
             open: true,
         },
     }
-    return config
 }
