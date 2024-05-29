@@ -46,7 +46,8 @@ export default (env: EnvVars): webpack.Configuration => {
         devServer: {
             port: env.port ?? 8080,
             open: true,
-            historyApiFallback: true
+            historyApiFallback: true,
+            hot: true
         },
     }
 }

@@ -1,10 +1,11 @@
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import ReactRefreshTypeScript from 'react-refresh-typescript'
 import { ModuleOptions } from 'webpack'
 import { BuildOptions } from './types'
 
-export const webpackLoaders = (
-    options: BuildOptions
-): ModuleOptions['rules'] => {
+export const webpackLoaders = ({
+    isDev,
+}: BuildOptions): ModuleOptions['rules'] => {
     return [
         {
             test: /\.(png|jpg|jpeg|gif)$/i,
@@ -37,7 +38,7 @@ export const webpackLoaders = (
             test: /\.s[ac]ss$/i,
             use: [
                 // Creates `style` nodes from JS strings
-                options.isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+                isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
                 // Translates CSS into CommonJS
                 'css-loader',
                 // Compiles Sass to CSS
@@ -46,8 +47,20 @@ export const webpackLoaders = (
         },
         {
             test: /\.tsx?$/,
-            use: 'ts-loader',
             exclude: /node_modules/,
+            use: [
+                {
+                    loader: 'ts-loader',
+                    options: {
+                        getCustomTransformers: () => ({
+                            before: [isDev && ReactRefreshTypeScript()].filter(
+                                Boolean
+                            ),
+                        }),
+                        transpileOnly: true,
+                    },
+                },
+            ],
         },
     ]
 }
