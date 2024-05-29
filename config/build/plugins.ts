@@ -4,6 +4,7 @@ import { Configuration, DefinePlugin } from 'webpack'
 import { BuildOptions } from './types'
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin'
+import path from 'path'
 
 export const webpackPlugins = ({
     isDev,
@@ -11,7 +12,8 @@ export const webpackPlugins = ({
 }: BuildOptions): Configuration['plugins'] => {
     return [
         new HtmlWebpackPlugin({
-            template: paths.html,
+            template: path.resolve(paths.public, 'index.html'),
+            // favicon: path.resolve(paths.public, 'favicon.ico'),
         }),
 
         !isDev &&
@@ -28,6 +30,6 @@ export const webpackPlugins = ({
         // поверка типов идет в отдельном процессе, не во время сборки
         new ForkTsCheckerWebpackPlugin(),
 
-        isDev && new ReactRefreshWebpackPlugin()
+        isDev && new ReactRefreshWebpackPlugin(),
     ].filter(Boolean)
 }
