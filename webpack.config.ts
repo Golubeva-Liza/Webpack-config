@@ -16,6 +16,7 @@ export default (env: EnvVars): webpack.Configuration => {
         entry: path.resolve(__dirname, 'src', 'index.tsx'),
         output: path.resolve(__dirname, 'build'),
         html: path.resolve(__dirname, 'public', 'index.html'),
+        src: path.resolve(__dirname, 'src'),
     }
 
     const options: BuildOptions = {
@@ -37,11 +38,15 @@ export default (env: EnvVars): webpack.Configuration => {
         },
         resolve: {
             extensions: ['.tsx', '.ts', '.js'],
+            alias: {
+                '@': paths.src
+            }
         },
         devtool: 'inline-source-map',
         devServer: {
             port: env.port ?? 8080,
             open: true,
+            historyApiFallback: true
         },
     }
 }
